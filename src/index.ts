@@ -39,7 +39,7 @@ export default {
         },
       });
 
-      const key = `videos/${crypto.randomUUID()}/test.mov`;
+      const key = `files/videos/${crypto.randomUUID()}/test.mov`;
       const fileType = "video/quicktime";
 
       const command = new PutObjectCommand({
