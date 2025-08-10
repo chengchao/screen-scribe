@@ -45,7 +45,7 @@ app.post(
         fileKey: source.fileKey,
         outputPath: videoPath,
       });
-      const { files: frames } = await sampleVideo({
+      const { frames } = await sampleVideo({
         inputPath: videoPath,
         outputDir: tmpDir,
       });
@@ -54,7 +54,7 @@ app.post(
       const uploadPromises = frames.map((frame) =>
         limit(() => {
           const asyncUpload = async () => {
-            const frameNumber = frame
+            const frameNumber = frame.path
               .split("/")
               .pop()
               ?.replace(/frame-(\d+)\.png$/, "$1");
@@ -63,11 +63,12 @@ app.post(
               s3,
               bucket: destination.bucket,
               fileKey: `${destination.folder}/${frameNumber}.png`,
-              inputPath: frame,
+              inputPath: frame.path,
             });
             return {
               frameNumber,
               frameFileKey: `${destination.folder}/${frameNumber}.png`,
+              frameTime: frame.time,
             };
           };
 

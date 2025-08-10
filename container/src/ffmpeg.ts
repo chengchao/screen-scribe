@@ -1,7 +1,8 @@
 import { execute } from "./execute";
-import { dirname } from "path";
 import { promises as fs } from "fs";
-import { listFiles } from "./helpers";
+import { promisify } from "node:util";
+import { execFile } from "node:child_process";
+const execFileP = promisify(execFile);
 
 type SampleOpts = {
   inputPath: string; // e.g. /Users/you/Desktop/Recording.mov
@@ -9,6 +10,8 @@ type SampleOpts = {
   rate?: number; // frames per second to keep (default 1)
   ext?: "png" | "jpg"; // output format (default 'png')
 };
+
+type Frame = { path: string; time: number };
 
 export async function sampleVideo({
   inputPath,
@@ -20,7 +23,7 @@ export async function sampleVideo({
   await fs.mkdir(outputDir, { recursive: true });
 
   // Use the output directory as cwd and a simple relative pattern
-  const outputPattern = `frame_%06d.${ext}`;
+  const outputPattern = `frame_%05d.${ext}`;
 
   // Notes:
   // - -vf fps=1: samples 1 frame/sec (better than -r for VFR inputs like QuickTime)
@@ -40,6 +43,22 @@ export async function sampleVideo({
 
   await execute("ffmpeg", { flags, cwd: outputDir });
 
-  const files = await listFiles(outputDir, "frame_", ".png");
-  return { dir: outputDir, pattern: outputPattern, files };
+  // map files → timestamps (index / fps)
+  const frames: Frame[] = [];
+  let i = 1;
+  while (true) {
+    const filename = `${outputDir}/frame_${String(i).padStart(5, "0")}.${ext}`;
+    try {
+      await execFileP("stat", [filename]);
+      frames.push({
+        path: filename,
+        time: (i - 1) / rate,
+      });
+      i++;
+    } catch {
+      break;
+    }
+  }
+
+  return { frames };
 }
