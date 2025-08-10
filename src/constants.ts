@@ -6,7 +6,7 @@
  * File path patterns and transformations
  */
 export const FILE_PATHS = {
-  VIDEO_PREFIX: "/video/",
+  VIDEOS_PREFIX: "/videos/",
   FRAMES_PREFIX: "/frames/",
   MARKDOWN_PREFIX: "/markdown/",
   MOV_EXTENSION: ".mov",

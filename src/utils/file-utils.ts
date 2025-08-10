@@ -6,14 +6,14 @@ import { ERROR_MESSAGES, FILE_PATHS } from "../constants";
  */
 export function transformVideoKeyToFrameKey(videoKey: string): string {
   if (
-    !videoKey.includes(FILE_PATHS.VIDEO_PREFIX) ||
+    !videoKey.includes(FILE_PATHS.VIDEOS_PREFIX) ||
     !videoKey.endsWith(FILE_PATHS.MOV_EXTENSION)
   ) {
     throw new Error(`${ERROR_MESSAGES.INVALID_FILE_KEY}: ${videoKey}`);
   }
 
   return videoKey
-    .replace(FILE_PATHS.VIDEO_PREFIX, FILE_PATHS.FRAMES_PREFIX)
+    .replace(FILE_PATHS.VIDEOS_PREFIX, FILE_PATHS.FRAMES_PREFIX)
     .replace(FILE_PATHS.MOV_EXTENSION, FILE_PATHS.PNG_EXTENSION);
 }
 
