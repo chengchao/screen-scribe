@@ -46,12 +46,15 @@ app.post(
         fileKey: source.fileKey,
         outputPath: videoPath,
       });
+      console.log("Downloaded video");
       const { frames } = await sampleVideo({
         inputPath: videoPath,
         outputDir: tmpDir,
       });
+      console.log("Sampled frames", frames.length);
 
       const filteredFrames = await filterFrames(frames, env.CHANGE_THRESHOLD);
+      console.log("Filtered frames", filteredFrames.length);
 
       const limit = pLimit(env.UPLOAD_CONCURRENCY_LIMIT);
       const uploadPromises = filteredFrames.map((frame) =>
