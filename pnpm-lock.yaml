@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@cloudflare/containers':
+        specifier: ^0.0.25
+        version: 0.0.25
       hono:
         specifier: ^4.9.0
         version: 4.9.0
@@ -17,6 +20,9 @@ importers:
         version: 4.28.1
 
 packages:
+
+  '@cloudflare/containers@0.0.25':
+    resolution: {integrity: sha512-41sCUwGPhMMQI/kwksEZXNWe/GZdQoIy8QlgO4NAF68M4y4NN41IXeQ4n2jn4iJ7tHaV4noe7RI75b7T6h2JGg==}
 
   '@cloudflare/kv-asset-handler@0.4.0':
     resolution: {integrity: sha512-+tv3z+SPp+gqTIcImN9o0hqE9xyfQjI1XD9pL6NuKjua9B1y7mNYv0S9cP+QEbA4ppVgGZEmKOvHX5G5Ei1CVA==}
@@ -509,6 +515,8 @@ packages:
     resolution: {integrity: sha512-EjIevzuJRiRPbVH4mGc8nApb/lVLKVpmUhAaR5R5doKGfAnGJ6Gr3CViAVjP+4FWSxCsybeWQdcgCtbX+7oZug==}
 
 snapshots:
+
+  '@cloudflare/containers@0.0.25': {}
 
   '@cloudflare/kv-asset-handler@0.4.0':
     dependencies:
