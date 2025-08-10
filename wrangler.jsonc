@@ -67,5 +67,12 @@
       "tag": "v1",
       "new_sqlite_classes": ["MyContainer"]
     }
-  ]
+  ],
+  "queues": {
+    "consumers": [
+      {
+        "queue": "frame-queue"
+      }
+    ]
+  }
 }
