@@ -8,6 +8,7 @@ import { join } from "path";
 import { sampleVideo } from "./ffmpeg";
 import pLimit from "p-limit";
 import { getEnv } from "./config";
+import { filterFrames } from "./utils/filter-frames";
 
 const app = new Hono();
 
@@ -50,8 +51,10 @@ app.post(
         outputDir: tmpDir,
       });
 
+      const filteredFrames = await filterFrames(frames, env.CHANGE_THRESHOLD);
+
       const limit = pLimit(env.UPLOAD_CONCURRENCY_LIMIT);
-      const uploadPromises = frames.map((frame) =>
+      const uploadPromises = filteredFrames.map((frame) =>
         limit(() => {
           const asyncUpload = async () => {
             const frameNumber = frame.path
@@ -77,7 +80,7 @@ app.post(
       );
       const frameFileKeys = await Promise.all(uploadPromises);
       console.log(
-        `Uploaded ${frames.length} frames to ${destination.bucket}/${destination.folder}`
+        `Uploaded ${filteredFrames.length} frames to ${destination.bucket}/${destination.folder}`
       );
       return c.json({
         message: "Frames uploaded",

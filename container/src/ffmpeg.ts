@@ -2,6 +2,7 @@ import { execute } from "./execute";
 import { promises as fs } from "fs";
 import { promisify } from "node:util";
 import { execFile } from "node:child_process";
+import { Frame } from "./types";
 const execFileP = promisify(execFile);
 
 type SampleOpts = {
@@ -10,8 +11,6 @@ type SampleOpts = {
   rate?: number; // frames per second to keep (default 1)
   ext?: "png" | "jpg"; // output format (default 'png')
 };
-
-type Frame = { path: string; time: number };
 
 export async function sampleVideo({
   inputPath,
