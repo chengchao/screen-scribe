@@ -4,6 +4,7 @@ import {
   WorkflowStep,
 } from "cloudflare:workers";
 import { sampleFramesInContainer } from "./utils/sample-frames";
+import { understandImageWithClaude } from "./utils/anthropic-vision";
 
 export type WorkflowParams = {
   video: {
@@ -21,7 +22,18 @@ export class ScreenScribeWorkflow extends WorkflowEntrypoint<CloudflareBindings>
       });
     });
 
-    await step.do("transcribe", async () => {});
+    await Promise.all(
+      frames.map((frame) => {
+        return step.do(`transcribe-${frame.frameNumber}`, async () => {
+          return understandImageWithClaude(this.env, {
+            bucket: event.payload.video.bucket,
+            fileKey: frame.frameFileKey,
+            prompt:
+              "Extract on-screen text and key UI actions. Provide a concise, ordered transcription of what the user would read/do.",
+          });
+        });
+      })
+    );
 
     await step.do("segment", async () => {});
 
