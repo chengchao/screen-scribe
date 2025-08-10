@@ -9,6 +9,7 @@ export type SampleFramesInput = {
 export type SampledFrame = {
   frameNumber: string;
   frameFileKey: string;
+  frameTime: number;
 };
 
 export async function sampleFramesInContainer(
@@ -38,7 +39,14 @@ export async function sampleFramesInContainer(
     })
   );
 
+  if (!response.ok) {
+    throw new Error(
+      `Failed to sample frames: ${response.status} ${response.statusText}`
+    );
+  }
+
   const { frameFileKeys } = (await response.json<{
+    message: string;
     frameFileKeys: SampledFrame[];
   }>()) as { frameFileKeys: SampledFrame[] };
 
