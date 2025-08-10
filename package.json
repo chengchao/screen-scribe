@@ -8,7 +8,9 @@
   },
   "dependencies": {
     "@cloudflare/containers": "^0.0.25",
-    "hono": "^4.9.0"
+    "@hono/zod-validator": "^0.7.2",
+    "hono": "^4.9.0",
+    "zod": "^4.0.17"
   },
   "devDependencies": {
     "wrangler": "^4.4.0"

@@ -1,15 +1,27 @@
-import { Hono } from "hono";
 import { ScreenScribeWorkflow } from "./workflow";
-import { Container } from "@cloudflare/containers";
+import { Container, getRandom } from "@cloudflare/containers";
 
-export class MyContainer extends Container<CloudflareBindings> {}
+export class MyContainer extends Container<CloudflareBindings> {
+  defaultPort = 3000;
+  sleepAfter = "10m";
+  envVars = {
+    R2_ACCESS_KEY_ID: this.env.R2_ACCESS_KEY_ID,
+    R2_SECRET_ACCESS_KEY: this.env.R2_SECRET_ACCESS_KEY,
+    CLOUDFLARE_ACCOUNT_ID: this.env.CLOUDFLARE_ACCOUNT_ID,
+  };
+}
 
-const app = new Hono();
-
-app.get("/", (c) => {
-  return c.text("Hello Hono!");
-});
+export default {
+  async fetch(
+    request: Request,
+    env: CloudflareBindings,
+    ctx: ExecutionContext
+  ) {
+    console.log("Fetching request:", request.url);
+    const containerInstance = await getRandom(env.SCREEN_SCRIBE_CONTAINER);
+    const result = await containerInstance.fetch(request);
+    return result;
+  },
+} satisfies ExportedHandler<CloudflareBindings>;
 
 export { ScreenScribeWorkflow };
-
-export default app;
