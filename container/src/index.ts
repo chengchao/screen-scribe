@@ -65,16 +65,23 @@ app.post(
               fileKey: `${destination.folder}/${frameNumber}.png`,
               inputPath: frame,
             });
+            return {
+              frameNumber,
+              frameFileKey: `${destination.folder}/${frameNumber}.png`,
+            };
           };
 
           return asyncUpload();
         })
       );
-      await Promise.all(uploadPromises);
+      const frameFileKeys = await Promise.all(uploadPromises);
       console.log(
         `Uploaded ${frames.length} frames to ${destination.bucket}/${destination.folder}`
       );
-      return c.json({ message: "Frames uploaded" });
+      return c.json({
+        message: "Frames uploaded",
+        frameFileKeys,
+      });
     } catch (error) {
       return c.json({ error: "Invalid request" }, 400);
     }
