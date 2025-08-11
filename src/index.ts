@@ -1,6 +1,6 @@
 import { frameProcessingQueue, R2Event } from "./queue";
 import { ScreenScribeWorkflow } from "./workflow";
-import { Container, getRandom } from "@cloudflare/containers";
+import { Container } from "@cloudflare/containers";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -50,12 +50,6 @@ export default {
 
       const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
       return Response.json({ url });
-    }
-
-    if (url.pathname.startsWith("/sample")) {
-      const containerInstance = await getRandom(env.SCREEN_SCRIBE_CONTAINER);
-      const result = await containerInstance.fetch(request);
-      return result;
     }
 
     return Response.json({ message: "Not found" }, { status: 404 });
