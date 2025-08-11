@@ -25,6 +25,9 @@ export async function sampleFramesInContainer(
       "https://screen-scribe-container.calendeam.workers.dev/sample",
       {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           source: {
             bucket: video.bucket,
