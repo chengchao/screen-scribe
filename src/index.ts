@@ -52,6 +52,12 @@ export default {
       return Response.json({ url });
     }
 
+    if (url.pathname.startsWith("/status")) {
+      const body = (await request.json()) as { id: string };
+      const status = await env.SCREEN_SCRIBE.get(body.id);
+      return Response.json({ status: status?.status, id: body.id });
+    }
+
     return Response.json({ message: "Not found" }, { status: 404 });
   },
 
