@@ -5,6 +5,7 @@ import {
 } from "cloudflare:workers";
 import { sampleFramesInContainer } from "./utils/sample-frames";
 import { understandImageWithClaude } from "./utils/anthropic-vision";
+import { composeDocumentWithClaude } from "./utils/compose";
 
 export type WorkflowParams = {
   video: {
@@ -22,14 +23,13 @@ export class ScreenScribeWorkflow extends WorkflowEntrypoint<CloudflareBindings>
       });
     });
 
-    await Promise.all(
+    const frameDescriptions = await Promise.all(
       frames.map((frame) => {
         return step.do(`transcribe-${frame.frameNumber}`, async () => {
           return understandImageWithClaude(this.env, {
             bucket: event.payload.video.bucket,
             fileKey: frame.frameFileKey,
-            prompt:
-              "Extract on-screen text and key UI actions. Provide a concise, ordered transcription of what the user would read/do.",
+            frameTime: frame.frameTime,
           });
         });
       })
@@ -37,16 +37,26 @@ export class ScreenScribeWorkflow extends WorkflowEntrypoint<CloudflareBindings>
 
     await step.do("segment", async () => {});
 
-    await Promise.all(
-      await step.do("understand", async () => {
-        return "frame descriptions";
-      })
-    );
+    // await Promise.all(
+    //   await step.do("understand", async () => {
+    //     return "frame descriptions";
+    //   })
+    // );
 
-    await step.waitForEvent("segment-done", {
-      type: "segment-done",
+    // await step.waitForEvent("segment-done", {
+    //   type: "segment-done",
+    // });
+
+    await step.do("compose", async () => {
+      const composed = await composeDocumentWithClaude(
+        this.env,
+        frameDescriptions.map((desc, idx) => ({
+          frameNumber: frames[idx].frameNumber,
+          description: desc,
+        })),
+        { format: "markdown" }
+      );
+      return composed;
     });
-
-    await step.do("compose", async () => {});
   }
 }

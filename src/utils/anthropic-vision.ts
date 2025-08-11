@@ -5,6 +5,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 export type UnderstandImageInput = {
   bucket: string;
   fileKey: string;
+  frameTime: number;
   prompt?: string;
 };
 
@@ -23,7 +24,7 @@ function createR2S3Client(env: CloudflareBindings): S3Client {
 
 export async function understandImageWithClaude(
   env: CloudflareBindings,
-  { bucket, fileKey, prompt }: UnderstandImageInput
+  { bucket, fileKey, frameTime, prompt }: UnderstandImageInput
 ): Promise<string> {
   const s3 = createR2S3Client(env);
 
@@ -51,7 +52,8 @@ export async function understandImageWithClaude(
             type: "text",
             text:
               prompt ??
-              "Describe this frame. Focus on on-screen text and key UI elements; summarize relevant content succinctly.",
+              `Describe this frame. Focus on on-screen text and key UI elements; summarize relevant content succinctly. \
+              The frame was captured at ${frameTime} seconds.`,
           },
         ],
       },
