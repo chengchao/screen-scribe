@@ -57,8 +57,13 @@ app.get(
   async (c) => {
     const id = c.req.valid("query").id;
     if (!id) return c.json({ message: "Missing id" }, 400);
-    const status = await c.env.SCREEN_SCRIBE.get(id);
-    return c.json({ status: await status?.status(), id });
+    const workflowInstance = await c.env.SCREEN_SCRIBE.get(id);
+    const status = await workflowInstance.status();
+    return c.json({
+      status,
+      output: status.output,
+      id,
+    });
   }
 );
 
