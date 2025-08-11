@@ -41,7 +41,9 @@ export async function sampleFramesInContainer(
 
   if (!response.ok) {
     throw new Error(
-      `Failed to sample frames: ${response.status} ${response.statusText}`
+      `Failed to sample frames: ${response.status} ${
+        response.statusText
+      } ${await response.text()}`
     );
   }
 
